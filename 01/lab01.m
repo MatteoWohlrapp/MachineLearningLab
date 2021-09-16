@@ -23,7 +23,7 @@ constant = 0.01;
 % We distinguish between two classes: 1 and 2 
 pointsWithClasses = createClasses(lvqdata);
 
-prototypesA = choosePrototype(pointsWithClasses, K_1);
+prototypesA = choosePrototype(pointsWithClasses, K_1)
 %prototypeB = choosePrototype(pointsWithClasses, K_2);
 
 errorsA = zeros(1); 
@@ -46,18 +46,29 @@ end
 
 %This functions randomly choses a prototype amongst the classs
 %This one choses one per class
-% numberOfPrototypes has too be even 
+% numberOfPrototypes has to be even
+%Each Prototype contains 3 things = x,y,class
+%Therefore, information extracted from "pointsWithClasses" will 
+%only be the first 3 arguments it contains.
+
+%Changelog:
+%Fixed the function so it behaves as intended, as in:
+% --> Choses indexes within the desired range (the way it was previously
+% implenented created floating numbers sometimes above the wanted level)
+% --> Creates the proper prototype matrix. 
 function prototypes = choosePrototype(pointsWithClasses, numberOfPrototypes)
-    prototypes = zeros(numberOf,3);
+    prototypes = zeros(numberOfPrototypes,3);
     
     split = numberOfPrototypes / 2; 
     for i = 1:numberOfPrototypes
         if i <= split 
-            randomIndex = mod(100 * rand, 50) + 1; 
-            prototypes(i) = [pointsWithClasses(randomIndex), 1];
-        else 
-            randomIndex = mod(100 * rand, 100) + 51; 
-            prototypes(i) = [pointsWithClasses(randomIndex), 2];
+            randomIndex = floor((49).*rand(1,1) + 1);
+            %randomIndex = floor(mod(100 * rand, 50)) + 1;
+            prototypes(i,:) = pointsWithClasses(randomIndex,[1:3]);
+        else
+            randomIndex = floor((49).*rand(1,1)+ 51);
+            %randomIndex = floor(mod(100 * rand, 100)) + 1;
+            prototypes(i,:) = pointsWithClasses(randomIndex,[1:3]);
         end 
     end 
     %a = 1;
