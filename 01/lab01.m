@@ -3,6 +3,16 @@ edit lab01
 load lvqdata.mat
 
 
+
+% N: dimensions of input vector: 100x2 
+% P: number of examples: 100
+% K: number of prototypes 
+K = 2;
+% l: learning rate 
+n = 0.002; 
+
+
+
 firstClass = lvqdata(1:50,1:2);
 secondClass = lvqdata(51:100,1:2);
 
@@ -17,3 +27,7 @@ plot(prototypeOne(1,1), prototypeOne(1,2), 'rs')
 hold on
 plot(prototypeTwo(1,1), prototypeTwo(1,2), 'bs')
 hold off
+
+
+
+
