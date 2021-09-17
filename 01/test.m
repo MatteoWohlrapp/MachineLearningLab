@@ -1,14 +1,29 @@
 clc
 
+load lvqdata.mat
+
+pointsWithClasses = createClasses(lvqdata)
+random_x = pointsWithClasses(randperm(size(pointsWithClasses, 1)), :)
+
+
+
 prototypes = [2 2 1;10 10 1; 0 0 2; 1 1 2];
 dataPoint = [1 1 1];
 dataPoints = [1 1 1; 2 2 1];
 
 winner  = findClosest(dataPoint, prototypes,4);
 
-is_it_right = correspondant(dataPoint,prototypes,4)
+is_it_right = correspondant(dataPoint,prototypes,4);
 
-correctness = findCorrectPCTG(dataPoints,prototypes,4,2)
+correctness = findCorrectPCTG(dataPoints,prototypes,4,2);
+
+function pointsWithClasses = createClasses(dataPoints)
+    %create matrix with x,y values for points and the corresponding class
+    pointsWithClasses = zeros(100,4);
+    pointsWithClasses(:,1:2) = dataPoints;
+    pointsWithClasses(1:50,3) = 1;
+    pointsWithClasses(51:100,3) = 2;
+end
 
 function winner = findClosest(dataPoint, prototypes, K)
     %some unimaginably far away distance.

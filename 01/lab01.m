@@ -124,7 +124,19 @@ function [errors,resultingProtoypes] = doTraining(dataPoints, prototypes, K, lea
     
     %greater while loop, will only stop if t_max is reached.
     while t < t_max
-        
+    %Firstly we need to randomize our dataSet.
+    
+    %Found this line of code that is supossed to randomize the rows while
+    %keeping the columns intact. 
+    %LINK: https://www.mathworks.com/matlabcentral/answers/30345-swap-matrix-row-randomly
+    %random_x = x(randperm(size(x, 1)), :)
+    %Randomize data points
+        randomDataPoints = dataPoints(randperm(size(dataPoints, 1)), :);
+        %run for every data point
+        for i = 1:100
+            
+            
+        end 
         
     end  
 
@@ -154,7 +166,7 @@ function winner = findClosest(dataPoint, prototypes, K)
 end 
 
 %Finds the answer and if the answer is correct.
-%Returns boolean x, True if the number corresponds, False if not
+%Returns int x, 1 if the number corresponds, 0 if not
 function x = correspondant(dataPoint, prototypes, K)
 
     %first we find the closes of the members to the datapoint.
@@ -162,9 +174,9 @@ function x = correspondant(dataPoint, prototypes, K)
     
     %Does it match?
     if dataPoint(3) == prototypes(winner,3)
-        x = true;
+        x = 1;
     else
-        x = false;
+        x = 0;
     end 
 
 end 
@@ -186,6 +198,8 @@ function correct = findCorrectPCTG(dataPoints, prototypes, K, size)
     correct = curCorrect/size;
 
 end 
+
+
 
 
 function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototypes)
