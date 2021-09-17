@@ -133,57 +133,16 @@ end
 %find, amongst the prototypes, which one is closest
 %simple function that can be used for more than one purpose.
 %Returns only the index of the closest prototype.
-function winner = findClosest(dataPoint, prototypes, K)
+function x = findClosest(dataPoint, prototypes, K)
     %some unimaginably far away distance.
     minDist = 100000;
-    winner = 0;
+    
     %iterate over protoypes
     for i = 1:K
-        %Calculate distance
-        %Here we are using the squared euclidean distance.
-        newDist = (dataPoint(1)- prototypes(i,1)).^2 + (dataPoint(2) - prototypes(i,2)).^2;
-        %if the new distance is smaller than the previous one, change it
-        %and update the "winner"
-        if newDist < minDist
-            minDist = newDist;
-            winner = i;
-        end
+        %Calculate distance,
+        
         
     end
-
-end 
-
-%Finds the answer and if the answer is correct.
-%Returns boolean x, True if the number corresponds, False if not
-function x = correspondant(dataPoint, prototypes, K)
-
-    %first we find the closes of the members to the datapoint.
-    winner = findClosest(dataPoint, prototypes,K);
-    
-    %Does it match?
-    if dataPoint(3) == prototypes(winner,3)
-        x = true;
-    else
-        x = false;
-    end 
-
-end 
-
-%Finds the percentage of the dataPoints that are correct with the given prototypes
-%Values from 0.0 to 1.0 
-% is the oposite of the returning 
-function correct = findCorrectPCTG(dataPoints, prototypes, K, size)
-    
-    curCorrect = 0;
-    
-    for i = 1:size
-        %If your class is the right one, add to curError.
-        if correspondant(dataPoints(i,:),prototypes,K)
-            curCorrect = curCorrect + 1; 
-        end 
-    end 
-    
-    correct = curCorrect/size;
 
 end 
 

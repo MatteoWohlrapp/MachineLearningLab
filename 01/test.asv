@@ -1,0 +1,34 @@
+clc
+
+prototypes = [2 2;10 10];
+dataPoint = [1 1];
+
+
+winner  = findClosest(dataPoint, prototypes
+
+function winner = findClosest(dataPoint, prototypes, K)
+    %some unimaginably far away distance.
+    minDist = 100000;
+    winner = 0
+    %iterate over protoypes
+    for i = 1:K
+        %Calculate distance
+        %Here we are using the squared euclidean distance.
+        newDist = (dataPoint(1).^2 - prototypes(i,1).^2) + (dataPoint(2).^2 - prototypes(i,2).^2);
+        %if the new distance is smaller than the previous one, change it
+        %and update the "winner"
+        if newDist < minDist
+            minDist = newDist
+            winner = i
+        end
+        
+    end
+
+end 
+
+%Note = Functions do not change the value of previously assigned variables
+%outside of themselves.s
+function [a,b] = changeA(a)
+    a = a + 10;
+    b = "fart";
+end 
