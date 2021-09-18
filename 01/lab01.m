@@ -118,7 +118,7 @@ end
 function [errors,resultingProtoypes] = doTraining(dataPoints, prototypes, K, learning_K, t_max)
     
     %Set the "first prototype" and the start of the errors.
-    ResultingPrototypes = prototypes;
+    resultingPrototypes = prototypes;
     errors = [];
     t = 1;
     
@@ -134,9 +134,37 @@ function [errors,resultingProtoypes] = doTraining(dataPoints, prototypes, K, lea
         randomDataPoints = dataPoints(randperm(size(dataPoints, 1)), :);
         %run for every data point
         for i = 1:100
+            %first find the nearest point:
+            index = findClosest(randomDataPoints(i,:),resultingPrototypes,K);
+            %now we find the direction in which we update the value
+            selection = correspondant(randomDataPoints(i,:),resultingPrototypes,K);
             
+            %if the class ir correct, we make it come "closer"
+            if selection == 1
+                %Find the direction
+                movement_dir = randomDataPoints(i,1:2) - resultingPrototypes(index,1:2);
+                resultingPrototypes(index,1:2) = resultingPrototypes(index,1:2) + (movement_dir * learning_K);   
+                
+            else %if not, move away
+                %Find the direction
+                movement_dir = randomDataPoints(i,1:2) - resultingPrototypes(index,1:2);
+                resultingPrototypes(index,1:2) = resultingPrototypes(index,1:2) - (movement_dir * learning_K);    
+            end 
             
         end 
+        
+        %with the "training" done, we calculate the error percentage
+        errors(t) = findCorrectPCTG(dataPoints, resutingPrototypes, K, 100);
+        
+        %check the diference between the current value and the previous one
+        if t > 1
+            %if the difference in error percentage is very small, we stop
+            %running new epochs
+            if abs(errors(t)- errors(t-1)) < 0.002
+                break;
+            end
+        end 
+        t = t + 1;    
         
     end  
 
