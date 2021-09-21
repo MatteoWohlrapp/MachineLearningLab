@@ -127,14 +127,14 @@ function closestPrototype = findClosestPrototype(dataPoint, prototypes, K)
 
 end 
 
-%caclulates the direction in which the prototype will move
-%returns 1 if the class matches, 0 if not
+%cac
+%Returns int x, 1 if the class matches, 0 if not
 function x = psiFunction(dataPoints, index, prototypes, K)
 
     %first we find the closes of the members to the datapoint.
     winner = findClosestPrototype(dataPoints(index,:), prototypes,K);
     
-    %Check if the prototype is the closest
+    %Does it match?
     if dataPoints(index, 3) == prototypes(winner,3)
         x = 1;
     else
@@ -144,7 +144,8 @@ end
 
 %Finds the percentage of the dataPoints that are correct with the given prototypes
 %Values from 0.0 to 1.0 
-function correctClassifications = findCorrectPCTG(dataPoints, prototypes, K, size)
+% is the oposite of the returning 
+function correct = findCorrectPCTG(dataPoints, prototypes, K, size)
     
     curCorrect = 0;
     
@@ -155,12 +156,13 @@ function correctClassifications = findCorrectPCTG(dataPoints, prototypes, K, siz
         end 
     end 
     
-    correctClassifications = curCorrect/size;
+    correct = curCorrect/size;
 
 end 
 
 % returns 1 if the number of errors is constant, 0 if not
-% we declare the number of errors constant if the last 50 values are equal
+% we declare the number of errors constant if the last 50 values did not
+% change
 function isConstant = isConstant(errors) 
     maxIndex = length(errors);
     isConstant = 1; 
@@ -181,8 +183,7 @@ function isConstant = isConstant(errors)
 end 
 
 
-% plots the classes and corresponding prototypes with
-% different colours
+
 function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototypes)
     %add the assumed class to the 4th column of the method
     for index = 1:length(pointsWithClasses) 
@@ -214,7 +215,6 @@ function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototyp
     grid
 end 
 
-% plots the learning curve for a given array of normalized errors
 function plotLearningCurve(errors, t_max, numberOfPrototypes) 
    figureName = sprintf('Learning curve with %d prototypes', numberOfPrototypes);
    figure('Name',figureName);
