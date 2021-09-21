@@ -2,8 +2,6 @@ edit lab01
 
 load lvqdata.mat
 
-
-
 % N: dimensions of input vector: 100x2 
 % P: number of examples: 100
 % K: number of prototypes 
@@ -127,14 +125,14 @@ function closestPrototype = findClosestPrototype(dataPoint, prototypes, K)
 
 end 
 
-%cac
-%Returns int x, 1 if the class matches, 0 if not
+%caclulates the direction in which the prototype will move
+%returns 1 if the class matches, 0 if not
 function x = psiFunction(dataPoints, index, prototypes, K)
 
     %first we find the closes of the members to the datapoint.
     winner = findClosestPrototype(dataPoints(index,:), prototypes,K);
     
-    %Does it match?
+    %Check if the prototype is the closest
     if dataPoints(index, 3) == prototypes(winner,3)
         x = 1;
     else
@@ -144,8 +142,7 @@ end
 
 %Finds the percentage of the dataPoints that are correct with the given prototypes
 %Values from 0.0 to 1.0 
-% is the oposite of the returning 
-function correct = findCorrectPCTG(dataPoints, prototypes, K, size)
+function correctClassifications = findCorrectPCTG(dataPoints, prototypes, K, size)
     
     curCorrect = 0;
     
@@ -156,13 +153,12 @@ function correct = findCorrectPCTG(dataPoints, prototypes, K, size)
         end 
     end 
     
-    correct = curCorrect/size;
+    correctClassifications = curCorrect/size;
 
 end 
 
 % returns 1 if the number of errors is constant, 0 if not
-% we declare the number of errors constant if the last 50 values did not
-% change
+% we declare the number of errors constant if the last 50 values are equal
 function isConstant = isConstant(errors) 
     maxIndex = length(errors);
     isConstant = 1; 
@@ -183,7 +179,8 @@ function isConstant = isConstant(errors)
 end 
 
 
-
+% plots the classes and corresponding prototypes with
+% different colours
 function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototypes)
     %add the assumed class to the 4th column of the method
     for index = 1:length(pointsWithClasses) 
@@ -195,9 +192,9 @@ function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototyp
     figure('Name',figureName);
     for i = 1:100 
         if pointsWithClasses(i, 4) == 1
-            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'ro');
+            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'ro', 'DisplayName','Class 1');
         elseif pointsWithClasses(i, 4) == 2
-            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'bo');
+            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'bo', 'DisplayName','Class 2');
         end
         hold on
     end 
@@ -212,9 +209,11 @@ function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototyp
         hold on
     end 
     hold off 
+    legend
     grid
 end 
 
+% plots the learning curve for a given array of normalized errors
 function plotLearningCurve(errors, t_max, numberOfPrototypes) 
    figureName = sprintf('Learning curve with %d prototypes', numberOfPrototypes);
    figure('Name',figureName);
@@ -223,6 +222,7 @@ function plotLearningCurve(errors, t_max, numberOfPrototypes)
        modifiedErrors(i) = errors(i); 
    end
    plot(1:t_max, modifiedErrors, 'r-', 1:t_max, modifiedErrors, 'r.')
+   plot()
    grid
 end 
 
