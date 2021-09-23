@@ -192,9 +192,9 @@ function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototyp
     figure('Name',figureName);
     for i = 1:100 
         if pointsWithClasses(i, 4) == 1
-            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'ro', 'DisplayName','Class 1');
+            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'ro');
         elseif pointsWithClasses(i, 4) == 2
-            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'bo', 'DisplayName','Class 2');
+            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'bo');
         end
         hold on
     end 
@@ -208,22 +208,31 @@ function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototyp
         end 
         hold on
     end 
-    hold off 
-    legend
+    
+    h = zeros(4,1);
+    h(1) = plot(NaN,NaN,'ro');
+    h(2) = plot(NaN,NaN,'bo');
+    h(3) = plot(NaN,NaN,'rX');
+    h(4) = plot(NaN,NaN,'bX');
+    legend(h, 'Class 1', 'Class 2', 'Prototype class 1', 'Prototype class 2');
     grid
 end 
 
 % plots the learning curve for a given array of normalized errors
 function plotLearningCurve(errors, t_max, numberOfPrototypes) 
-   figureName = sprintf('Learning curve with %d prototypes', numberOfPrototypes);
-   figure('Name',figureName);
-   modifiedErrors = zeros(t_max, 1);
-   for i = 1:t_max 
+    figureName = sprintf('Learning curve with %d prototypes', numberOfPrototypes);
+    figure('Name',figureName);
+    modifiedErrors = zeros(t_max, 1);
+    for i = 1:t_max 
        modifiedErrors(i) = errors(i); 
-   end
-   plot(1:t_max, modifiedErrors, 'r-', 1:t_max, modifiedErrors, 'r.')
-   plot()
-   grid
+    end
+    plot(1:t_max, modifiedErrors, 'r-', 1:t_max, modifiedErrors, 'r.')
+    hold on
+    h = zeros(2,1);
+    h(1) = plot(NaN,NaN,'r.');
+    h(2) = plot(NaN,NaN,'w.');
+    legend(h, 'Error rate', 'X-axis: number of epochs');
+    grid
 end 
 
 
