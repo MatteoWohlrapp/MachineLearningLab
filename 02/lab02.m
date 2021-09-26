@@ -65,7 +65,7 @@ function plot_errors(linreg)
     % looping all p values
     for i = 1:length(p_values)
         %calculating the optimal weights
-        w = calculate_weights(linreg, p_values(i)); 
+        w = calculate_weights(linreg, p_values(i));
         % calculating the training and test errors 
         tr_e = training_error(linreg, w, p_values(i));
         te_e = test_error(linreg, w);
@@ -75,9 +75,11 @@ function plot_errors(linreg)
     % naming of figure
     fig = figure('Name', 'Plot of training and testing errors');
     %plotting
-    plot(p_values, te_e, 'r.');
+    %plot(p_values, te_e, 'r.');
+    plot(p_values,test_errors,'r. ');
     hold on 
-    plot(p_values, tr_e, 'b.');
+    %plot(p_values, tr_e, 'b.');
+    plot(p_values,training_errors, 'b. ');
     % legend
     h = zeros(2,1);
     h(1) = plot(NaN,NaN,'r.');
@@ -86,7 +88,8 @@ function plot_errors(linreg)
     %labeling and adjusting of axis
     xlabel('P');
     ylabel('Value of error');
-    axis([0,500,0.4,0.6])
+    axis([0,500,0.0,1.0])
+    %axis([0,500,1.0,1.0])
     grid
     % saving file
     set(fig, 'PaperPosition', [0 0 25 25]);

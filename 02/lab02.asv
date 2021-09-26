@@ -2,7 +2,6 @@ edit lab02
 
 linreg = load('linreg.mat');
 
-
 plot_errors(linreg);
 plot_weights(linreg);
 
@@ -21,29 +20,37 @@ function w = calculate_weights(linreg, P)
     w = X_X_transposed_inverse * X_transposed * Y(1:P);
 end 
 
+% function calculating the training error for given P
 function E_train = training_error(linreg, w, P)
     Xs = linreg.xtrain;
     Ys = linreg.ytrain;
     E_train = 0;
     
+    % sum formula
     for i = 1:P 
+        % formula for each individual sum
         E_train = E_train + 1/2 * ((Xs(i,:) * w - Ys(i))^2);
     end
+    % applying the average 
     E_train = 1/P * E_train;
 end 
 
+% function calculating the test error for P = 500
 function E_test = test_error(linreg, w)
     Xs = linreg.xtest;
     Ys = linreg.ytest;
     E_test = 0;
     
+    % sum formula
     for i = 1:500
+        % formula for each individual sum
         E_test = E_test + ((Xs(i,:) * w - Ys(i))^2);
     end
+    % applying the average 
     E_test = 1/1000 * E_test;
 end 
 
-
+% function plotting the training and testing error for different P 
 function plot_errors(linreg)
     % initialising an array which holds all inspected P values
     p_values = zeros(1,1);
@@ -58,8 +65,8 @@ function plot_errors(linreg)
     % looping all p values
     for i = 1:length(p_values)
         %calculating the optimal weights
-        w = calculate_weights(linreg, p_values(i)); 
-        
+        w = calculate_weights(linreg, p_values(i));
+        % calculating the training and test errors 
         tr_e = training_error(linreg, w, p_values(i));
         te_e = test_error(linreg, w);
         training_errors(i) = tr_e;
@@ -68,9 +75,11 @@ function plot_errors(linreg)
     % naming of figure
     fig = figure('Name', 'Plot of training and testing errors');
     %plotting
-    plot(p_values, te_e, 'r.');
+    %plot(p_values, te_e, 'r.');
+    plot(p_values,test_errors,'r. ');
     hold on 
-    plot(p_values, tr_e, 'b.');
+    %plot(p_values, tr_e, 'b.');
+    plot(p_values,training_errors, 'b. ');
     % legend
     h = zeros(2,1);
     h(1) = plot(NaN,NaN,'r.');
@@ -113,7 +122,7 @@ function plot_weights(linreg)
         % saving file
         set(fig, 'PaperPosition', [0 0 25 25]);
         set(fig, 'PaperSize', [25 25]);
-        saved_name = sprintf('W_%d.pdf', p_values(i));
+        saved_name = sprintf('W_P%d.pdf', p_values(i));
         saveas(fig, saved_name);
     end
 end
