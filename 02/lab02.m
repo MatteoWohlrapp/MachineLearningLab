@@ -75,11 +75,9 @@ function plot_errors(linreg)
     % naming of figure
     fig = figure('Name', 'Plot of training and testing errors');
     %plotting
-    %plot(p_values, te_e, 'r.');
-    plot(p_values,test_errors,'r-', p_values,test_errors,'r.');
+    plot(p_values,test_errors,'r-', p_values,test_errors,'r.', 'MarkerSize',20, 'LineWidth',2);
     hold on 
-    %plot(p_values, tr_e, 'b.');
-    plot(p_values,training_errors, 'b-', p_values,training_errors, 'b.');
+    plot(p_values,training_errors, 'b-', p_values,training_errors, 'b.', 'MarkerSize',20, 'LineWidth',2);
     % legend
     h = zeros(2,1);
     h(1) = plot(NaN,NaN,'r.');
