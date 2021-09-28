@@ -76,10 +76,10 @@ function plot_errors(linreg)
     fig = figure('Name', 'Plot of training and testing errors');
     %plotting
     %plot(p_values, te_e, 'r.');
-    plot(p_values,test_errors,'r. ');
+    plot(p_values,test_errors,'r. ', 'MarkerSize',40);
     hold on 
     %plot(p_values, tr_e, 'b.');
-    plot(p_values,training_errors, 'b. ');
+    plot(p_values,training_errors, 'b. ','MarkerSize', 40);
     % legend
     h = zeros(2,1);
     h(1) = plot(NaN,NaN,'r.');
