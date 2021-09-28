@@ -75,9 +75,9 @@ function plot_errors(linreg)
     % naming of figure
     fig = figure('Name', 'Plot of training and testing errors');
     %plotting
-    plot(p_values,test_errors,'r-', p_values,test_errors,'r.', 'MarkerSize',20, 'LineWidth',2);
+    plot(p_values,test_errors,'r-', p_values,test_errors,'r.', 'MarkerSize',15, 'LineWidth',2);
     hold on 
-    plot(p_values,training_errors, 'b-', p_values,training_errors, 'b.', 'MarkerSize',20, 'LineWidth',2);
+    plot(p_values,training_errors, 'b-', p_values,training_errors, 'b.', 'MarkerSize',15, 'LineWidth',2);
     % legend
     h = zeros(2,1);
     h(1) = plot(NaN,NaN,'r.');
@@ -90,8 +90,8 @@ function plot_errors(linreg)
     %axis([0,500,1.0,1.0])
     grid
     % saving file
-    set(fig, 'PaperPosition', [0 0 25 25]);
-    set(fig, 'PaperSize', [25 25]);
+    set(fig, 'PaperPosition', [0 0 20 20]);
+    set(fig, 'PaperSize', [20 20]);
     saveas(fig, 'Testing_Errors.pdf');
 end 
 
@@ -119,8 +119,8 @@ function plot_weights(linreg)
         ylabel('Value of weight');
         grid
         % saving file
-        set(fig, 'PaperPosition', [0 0 25 25]);
-        set(fig, 'PaperSize', [25 25]);
+        set(fig, 'PaperPosition', [0 0 15 15]);
+        set(fig, 'PaperSize', [15 15]);
         saved_name = sprintf('W_P%d.pdf', p_values(i));
         saveas(fig, saved_name);
     end
