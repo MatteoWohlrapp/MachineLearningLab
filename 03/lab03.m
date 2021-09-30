@@ -68,22 +68,49 @@ function pointsWithClasses = classify_data(dataPoints)
     pointsWithClasses(51:100,3) = 2;
 end
 
-
-%Randomly choses a prototype amongst the points for each class
-%Each returned prototype contains 3 things = x, y, class
-function prototypes = choosePrototype(pointsWithClasses, numberOfPrototypes)
-    prototypes = zeros(numberOfPrototypes,3);
-    %divide by 2 since we have 2 classes
-    numberOfPrototypesPerClass = numberOfPrototypes / 2; 
-    for i = 1:numberOfPrototypes
-        if i <= numberOfPrototypesPerClass 
-            randomIndex = floor((49).*rand(1,1) + 1);
-            prototypes(i,:) = pointsWithClasses(randomIndex,(1:3));
+function prototypes = choosePrototype(pointsWithClasses, K)
+    prototypes = zeros((2*K),3);
+    
+    for i = 1:(2*k)
+        %if Class "1"
+        if i <= K
+            correct = 0;
+            %Search until we find a suitable value
+            while correct == 0
+                randomIndex = floor((length(pointsWithClasses)).*rand(1,1)+1);
+                if pointsWithClasses(randomIndex,3) == 1
+                    testsize_a = unique(prototypes,"rows");
+                    dummy = prototypes(i,:);
+                    prototypes(i,:) = pointsWithClasses(randomIndex,(1:3));
+                    testsize_b = unique(prototypes,"rows");
+                    if length(testsize_b) > length(testsize_a)
+                        correct = 1;
+                    else
+                        prototypes(i,:) = dummy;
+                    end
+                end 
+            end
+        %if Class "2"
         else
-            randomIndex = floor((49).*rand(1,1)+ 51);
-            prototypes(i,:) = pointsWithClasses(randomIndex,(1:3));
-        end 
-    end   
+             correct = 0;
+            %Search until we find a suitable value
+            while correct == 0
+                randomIndex = floor((length(pointsWithClasses)).*rand(1,1)+1);
+                if pointsWithClasses(randomIndex,3) == 2
+                    testsize_a = unique(prototypes,"rows");
+                    dummy = prototypes(i,:);
+                    prototypes(i,:) = pointsWithClasses(randomIndex,(1:3));
+                    testsize_b = unique(prototypes,"rows");
+                    if length(testsize_b) > length(testsize_a)
+                        correct = 1;
+                    else
+                        prototypes(i,:) = dummy;
+                    end
+                end 
+            end
+        end
+
+    end 
 end
 
 % Trains the prototypes based on squared euclidian distance. 
