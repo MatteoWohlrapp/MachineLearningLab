@@ -28,22 +28,41 @@ do_training(pointsWithClasses, prototypesC, K_3, n, t_max);
 
 
 
-function cross_validation(lvqdata)
+function cross_validation(lvqdata, m)
     % function to shuffle the data 
+    %TODO
     randomized_data = randomize_data(classify_data(lyqdata));
-    train_errors = zeros(1);
-        test_errors = zeros(1);
+    train_errors = zeros(1,1);
+    test_errors = zeros(1,1);
     for k = 1:5
-        train_errors = zeros(1);
-        test_errors = zeros(1);
-        for i = 1:5 
-            [train_data, test_data] = split_data(randomized_data);
+        for i = 1:m 
+            %TODO
+            [train_data, test_data] = split_data(randomized_data, m, i);
+            %TODO: adjust do_training
             [train_error, prototypes] = do_training(...); 
+            %TODO
             test_error = validation(prototypes, test_data);
-            train_errors(i) = train_error; 
-            test_errors(i) = test_error;
+            train_errors(k,i) = train_error; 
+            test_errors(k,i) = test_error;
         end
     end
+    %TODO
+    plot_cross_validation(train_errors, test_errors);
+end
+
+function [train_data, test_data] = split_data(randomized_data, m, i)
+    interval_size = length(randomized_data)/m;
+    train_data = zeros(length(randomized_data)-interval_size, 4);
+    test_data = zeros(interval_size, 4);
+    
+    for i = 1:length(randomized_data) 
+        if (i-1) * interval_size < i <= i * interval_size
+            
+        else 
+            
+        end
+    end
+
 end
 
 % Copying values for x,y,correctclass and the class we assume based on the 

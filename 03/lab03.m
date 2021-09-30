@@ -50,6 +50,26 @@ function cross_validation(lvqdata, m)
     plot_cross_validation(train_errors, test_errors);
 end
 
+% function to split the data according to the current iteration
+function [train_data, test_data] = split_data(randomized_data, m, k)
+    interval_size = length(randomized_data)/m;
+    train_data = zeros(length(randomized_data)-interval_size, 4);
+    test_data = zeros(interval_size, 4);
+    train_index = 0;
+    test_index = 0; 
+    
+    for i = 1:length(randomized_data) 
+        if ((k-1) * interval_size < i) && (i <= k * interval_size)
+            train_data(train_index) = randomized_data(i);
+            train_index = train_index + 1; 
+        else 
+            test_data(test_index) = randomized_data(i);
+            test_index = test_index + 1; 
+        end
+    end
+
+end
+
 % Copying values for x,y,correctclass and the class we assume based on the 
 %distance to the prototypes.
 % We distinguish between two classes: 1 and 2 
