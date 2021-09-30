@@ -15,6 +15,7 @@ function cross_validation(lvqdata, m)
     randomized_data = randomize_data(classify_data(lvqdata));
     train_errors = zeros(1,1);
     test_errors = zeros(1,1);
+    
     for K = 1:5
         for i = 1:m 
             [train_data, test_data] = split_data(randomized_data, m, i);
@@ -50,16 +51,17 @@ function [train_data, test_data] = split_data(randomized_data, m, k)
     interval_size = length(randomized_data)/m;
     train_data = zeros(length(randomized_data)-interval_size, 4);
     test_data = zeros(interval_size, 4);
-    train_index = 0;
-    test_index = 0; 
-    
+    train_index = 1;
+    test_index = 1; 
+
     for i = 1:length(randomized_data) 
         if ((k-1) * interval_size < i) && (i <= k * interval_size)
-            train_data(train_index) = randomized_data(i);
-            train_index = train_index + 1; 
-        else 
-            test_data(test_index) = randomized_data(i);
+            test_data(test_index,:) = randomized_data(i,:);
             test_index = test_index + 1; 
+           
+        else 
+            train_data(train_index,:) = randomized_data(i,:);
+            train_index = train_index + 1; 
         end
     end
 
@@ -86,7 +88,8 @@ end
 %Each returned prototype contains 3 things = x, y, class
 function prototypes = choose_prototypes(points_with_classes, K)
     prototypes = zeros((2*K),3);
-    for i = 1:(2*k)
+    
+    for i = 1:(2*K)
         %if Class "1"
         if i <= K 
             class = 1; 
@@ -94,22 +97,40 @@ function prototypes = choose_prototypes(points_with_classes, K)
         else 
             class = 2; 
         end
-
+        %iterations = 0;
         correct = 0;
         %Search until we find a suitable value
         while correct == 0
             randomIndex = floor((length(points_with_classes)).*rand(1,1)+1);
+            
             if points_with_classes(randomIndex,3) == class
+                
                 testsize_a = unique(prototypes,"rows");
+                
+                
                 dummy = prototypes(i,:);
+                
+                
                 prototypes(i,:) = points_with_classes(randomIndex,(1:3));
+                
                 testsize_b = unique(prototypes,"rows");
-                if length(testsize_b) > length(testsize_a)
-                    correct = 1;
+               
+                
+                if length(testsize_b(:,1)) >= length(testsize_a(:,1))
+                      correct = 1;
+                    
+                %Case for last member of array      
+                elseif length(testsize_b(:,1)) == length(testsize_a(:,1))
+                    if(any(prototypes(:,3) == 0.0))
+                        print("dead air")
+                    else
+                        correct = 1;
+                    end
                 else
                     prototypes(i,:) = dummy;
                 end
             end 
+           % iterations = iterations + 1
         end
 
     end 
@@ -143,7 +164,7 @@ function [error, resulting_prototypes] = do_training(data_points, prototypes, n,
         
         %calculating the last error percentage at t_max
         if t == t_max
-            error = 1 - find_correct_pctg(data_points, resulting_prototypes, 100);
+            error = 1 - find_correct_pctg(data_points, resulting_prototypes);
         end
       
         t = t + 1;    
@@ -155,12 +176,17 @@ end
 %returns only the index of the closest prototype.
 function closestPrototype = find_closest_prototype(dataPoint, prototypes)
     %starting with the first distance as the shortest
-    minDist = (dataPoint(1)- prototypes(1,1)).^2 + (dataPoint(2) - prototypes(1,2)).^2;
+    minDist = (dataPoint(1,1)- prototypes(1,1)).^2 + (dataPoint(1,2) - prototypes(1,2)).^2;
     closestPrototype = 1;
+    %disp(dataPoint)
+    %disp(dataPoint(1,1))
+    %disp(dataPoint(1,2))
+    %disp(prototypes)
+    %disp(length(prototypes(:,1)))
     %iterate over protoypes
-    for i = 1:length(prototypes)
+    for i = 1:length(prototypes(:,1))
         %Calculate distance using the squared euclidean distance.
-        newDist = (dataPoint(1)- prototypes(i,1)).^2 + (dataPoint(2) - prototypes(i,2)).^2;
+        newDist = (dataPoint(1,1)- prototypes(i,1)).^2 + (dataPoint(1,2) - prototypes(i,2)).^2;
         %if the new distance is smaller than the previous one, change it
         if newDist < minDist
             minDist = newDist;
