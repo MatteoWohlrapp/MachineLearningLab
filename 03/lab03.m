@@ -39,7 +39,8 @@ function cross_validation(lvqdata, m)
             %TODO
             [train_data, test_data] = split_data(randomized_data, m, i);
             %TODO: adjust do_training
-            [train_error, prototypes] = do_training(...); 
+            prototypes = choosePrototype(train_data,(2*k));
+            [train_error, prototypes] = do_training(); 
             %TODO
             test_error = validation(prototypes, test_data);
             train_errors(k,i) = train_error; 
@@ -49,6 +50,13 @@ function cross_validation(lvqdata, m)
     %TODO
     plot_cross_validation(train_errors, test_errors);
 end
+
+%Creates a randomized colum of data.
+function new_datapoints = randomize_data(dataPoints)
+  %randperm randomize the rows while keeping the columns intact. 
+  %Source: https://www.mathworks.com/matlabcentral/answers/30345-swap-matrix-row-randomly
+  new_datapoints = dataPoints(randperm(size(dataPoints, 1)), :);
+end 
 
 % Copying values for x,y,correctclass and the class we assume based on the 
 %distance to the prototypes.
@@ -80,7 +88,7 @@ end
 
 % Trains the prototypes based on squared euclidian distance. 
 % Also plots the results in graphs at the end of the epochs
-function [error, prototypes] = do_training(dataPoints, prototypes, K, learning_K, t_max)
+function [error, resultingPrototypes] = do_training(dataPoints, prototypes, K, learning_K, t_max)
     
     %Set the randomized prototypes and the start of the errors.
     resultingPrototypes = prototypes;
@@ -88,6 +96,7 @@ function [error, prototypes] = do_training(dataPoints, prototypes, K, learning_K
     t = 1;
     
     %greater while loop, will only stop if t_max is reached.
+    %For our case, t_max = 100
     while t <= t_max
     
     %randperm randomize the rows while keeping the columns intact. 
@@ -117,15 +126,13 @@ function [error, prototypes] = do_training(dataPoints, prototypes, K, learning_K
       
         %with the "training" done, we calculate the error percentage
         errors(t) = 1 - findCorrectPCTG(dataPoints, resultingPrototypes, K, 100);
-        
-        if isConstant(errors) == 1 || t == t_max
-            break;  
-        end 
+       
         t = t + 1;    
         
     end  
-    plotLearningCurve(errors, t, K);
-    plotPrototypesAndPoints(randomDataPoints, resultingPrototypes, K);
+    error = errors(t_max);
+    %plotLearningCurve(errors, t, K);
+    %plotPrototypesAndPoints(randomDataPoints, resultingPrototypes, K);
 end
 
 %finds the prototype closest to the dataPoint
