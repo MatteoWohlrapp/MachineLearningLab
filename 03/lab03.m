@@ -26,7 +26,7 @@ function cross_validation(lvqdata, m)
         end
     end
     %TODO
-    plot_cross_validation(train_errors, test_errors);
+    %plot_cross_validation(train_errors, test_errors);
 end
 
 
