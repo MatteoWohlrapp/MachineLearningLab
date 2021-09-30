@@ -82,22 +82,37 @@ function points_with_classes = classify_data(data_points)
     points_with_classes(51:100,3) = 2;
 end
 
-
 %Randomly choses a prototype amongst the points for each class
 %Each returned prototype contains 3 things = x, y, class
-function prototypes = choose_prototypes(points_with_classes, number_of_prototypes)
-    prototypes = zeros(number_of_prototypes,3);
-    %divide by 2 since we have 2 classes
-    numberOfPrototypesPerClass = number_of_prototypes / 2; 
-    for i = 1:number_of_prototypes
-        if i <= numberOfPrototypesPerClass 
-            randomIndex = floor((49).*rand(1,1) + 1);
-            prototypes(i,:) = points_with_classes(randomIndex,(1:3));
-        else
-            randomIndex = floor((49).*rand(1,1)+ 51);
-            prototypes(i,:) = points_with_classes(randomIndex,(1:3));
-        end 
-    end   
+function prototypes = choose_prototypes(points_with_classes, K)
+    prototypes = zeros((2*K),3);
+    for i = 1:(2*k)
+        %if Class "1"
+        if i <= K 
+            class = 1; 
+        %if Class "2"
+        else 
+            class = 2; 
+        end
+
+        correct = 0;
+        %Search until we find a suitable value
+        while correct == 0
+            randomIndex = floor((length(points_with_classes)).*rand(1,1)+1);
+            if points_with_classes(randomIndex,3) == class
+                testsize_a = unique(prototypes,"rows");
+                dummy = prototypes(i,:);
+                prototypes(i,:) = points_with_classes(randomIndex,(1:3));
+                testsize_b = unique(prototypes,"rows");
+                if length(testsize_b) > length(testsize_a)
+                    correct = 1;
+                else
+                    prototypes(i,:) = dummy;
+                end
+            end 
+        end
+
+    end 
 end
 
 % Trains the prototypes based on squared euclidian distance. 
