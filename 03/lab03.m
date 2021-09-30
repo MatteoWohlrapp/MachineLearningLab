@@ -26,6 +26,9 @@ function cross_validation(lvqdata, m)
             test_errors(K,i) = test_error;
         end
     end
+
+    disp(train_errors)
+    disp(test_errors)
     %TODO
     %plot_cross_validation(train_errors, test_errors);
 end
@@ -204,7 +207,7 @@ function x = psi_function(dataPoints, index, prototypes)
     %first we find the closes of the members to the datapoint.
     winner = find_closest_prototype(dataPoints(index,:), prototypes);
     
-    %Check if the prototype is the closest
+    %Check if the prototype is the closest and has the same class
     if dataPoints(index, 3) == prototypes(winner,3)
         x = 1;
     else
@@ -220,7 +223,7 @@ function correct_classification = find_correct_pctg(data_points, prototypes)
     
     for i = 1:size
         %If your class is the right one, add to curError.
-        if psi_function(data_points, i,prototypes)
+        if psi_function(data_points, i,prototypes) == 1
             curCorrect = curCorrect + 1; 
         end 
     end 
