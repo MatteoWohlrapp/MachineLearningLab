@@ -202,6 +202,50 @@ function correct_classification = find_correct_pctg(data_points, prototypes)
     correct_classification = curCorrect/size;
 end 
 
+function plot_cross_validation(train_errors, test_errors)
+     % initialising an array which holds all inspected k values
+    k_values = zeros(1,1);
+    % as many values as train_errors
+    for i = 1:length(train_errors)
+        p_values(i) = i * 10;
+    end 
+    % initializing arrays for errors
+    training_errors = zeros(1,1); 
+    test_errors = zeros(1,1);
+    
+    % looping all p values
+    for i = 1:length(p_values)
+        %calculating the optimal weights
+        w = calculate_weights(linreg, p_values(i));
+        % calculating the training and test errors 
+        tr_e = training_error(linreg, w, p_values(i));
+        te_e = test_error(linreg, w);
+        training_errors(i) = tr_e;
+        test_errors(i) = te_e; 
+    end 
+    % naming of figure
+    fig = figure('Name', 'Plot of training and testing errors');
+    %plotting
+    plot(p_values,test_errors,'r-', p_values,test_errors,'r.', 'MarkerSize',15, 'LineWidth',2);
+    hold on 
+    plot(p_values,training_errors, 'b-', p_values,training_errors, 'b.', 'MarkerSize',15, 'LineWidth',2);
+    % legend
+    h = zeros(2,1);
+    h(1) = plot(NaN,NaN,'r.');
+    h(2) = plot(NaN,NaN,'b.');
+    legend(h, 'Test errors', 'Training errors');
+    %labeling and adjusting of axis
+    xlabel('P');
+    ylabel('Value of error');
+    axis([0,500,0.0,1.0])
+    %axis([0,500,1.0,1.0])
+    grid
+    % saving file
+    set(fig, 'PaperPosition', [0 0 20 20]);
+    set(fig, 'PaperSize', [20 20]);
+    saveas(fig, 'Testing_Errors.pdf');
+end
+
 % plots the classes and corresponding prototypes with
 % different colours
 function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototypes)
