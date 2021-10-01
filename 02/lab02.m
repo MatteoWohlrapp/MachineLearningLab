@@ -1,6 +1,6 @@
 edit lab02
 
-linreg = load('linreg.mat');
+linreg = load('linreg.mat')
 
 plot_errors(linreg);
 plot_weights(linreg);
