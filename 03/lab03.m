@@ -5,6 +5,9 @@ load lvqdata.mat
 
 m = 5; 
 cross_validation(lvqdata, m)
+m=10;
+cross_validation(lvqdata, m)
+
 
 function cross_validation(lvqdata, m)
     % n: learning rate 
@@ -26,10 +29,6 @@ function cross_validation(lvqdata, m)
             test_errors(K,i) = test_error;
         end
     end
-
-    disp(train_errors)
-    disp(test_errors)
-    %TODO
     plot_cross_validation(train_errors, test_errors);
 end
 
@@ -242,7 +241,8 @@ function plot_cross_validation(train_errors, test_errors)
     axis([0.5,5.5,-0.5,1.0])
     grid
     % saving file
-    save_plot('Train_errors.pdf', fig)
+    saved_name = sprintf('Train_errors_P%d.pdf', length(train_errors(1, :)));
+    save_plot(saved_name, fig)
 
      % naming of figure
     fig = figure('Name', 'Error bar of training error');
@@ -259,7 +259,8 @@ function plot_cross_validation(train_errors, test_errors)
     axis([0.5,5.5,-0.5,1.0])
     grid
     % saving file
-    save_plot('Test_errors.pdf', fig)
+    saved_name = sprintf('Test_errors_P%d.pdf', length(train_errors(1, :)));
+    save_plot(saved_name, fig)
 end
 
 function save_plot(name, fig)
