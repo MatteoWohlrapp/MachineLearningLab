@@ -5,8 +5,8 @@ load lvqdata.mat
 
 m = 5; 
 cross_validation(lvqdata, m)
-m=10;
-cross_validation(lvqdata, m)
+%m=10;
+%cross_validation(lvqdata, m)
 
 
 function cross_validation(lvqdata, m)
@@ -19,17 +19,24 @@ function cross_validation(lvqdata, m)
     train_errors = zeros(1,1);
     test_errors = zeros(1,1);
     
+    train_error_prototypes = zeros(5,100);
+    
+    
     for K = 1:5
         for i = 1:m 
             [train_data, test_data] = split_data(randomized_data, m, i);
             prototypes = choose_prototypes(train_data,K);
             [train_error, prototypes] = do_training(train_data, prototypes, n, t_max); 
             test_error = validation(prototypes, test_data);
-            train_errors(K,i) = train_error; 
+            train_errors(K,i) = train_error(length(train_error)); 
             test_errors(K,i) = test_error;
+            if i == 1
+                train_error_prototypes(K, :) = train_error;
+            end
         end
     end
     plot_cross_validation(train_errors, test_errors);
+    plot_train_errors(train_error_prototypes);
 end
 
 
@@ -143,7 +150,7 @@ function [error, resulting_prototypes] = do_training(data_points, prototypes, n,
     
     %Set the randomized prototypes and the start of the errors.
     resulting_prototypes = prototypes;
-    error = 0;
+    error = zeros(1,1);
     t = 1;
     
     %greater while loop, will only stop if t_max is reached.
@@ -165,14 +172,13 @@ function [error, resulting_prototypes] = do_training(data_points, prototypes, n,
         end 
         
         %calculating the last error percentage at t_max
-        if t == t_max
-            error = 1 - find_correct_pctg(data_points, resulting_prototypes);
-        end
-      
-        t = t + 1;    
         
-    end  
-end
+        error(t) = 1 - find_correct_pctg(data_points, resulting_prototypes);
+        t = t + 1;    
+
+    end
+      
+end  
 
 %finds the prototype closest to the dataPoint
 %returns only the index of the closest prototype.
@@ -262,6 +268,26 @@ function plot_cross_validation(train_errors, test_errors)
     saved_name = sprintf('Test_errors_P%d.pdf', length(train_errors(1, :)));
     save_plot(saved_name, fig)
 end
+
+% plots the learning curve for a given array of normalized errors
+function plot_train_errors(train_error_prototypes)
+    fig = figure('Name','Learning curve with differnt amounts of prototypes');
+    h = zeros(2,1);
+    colours = ['r', 'g', 'b', 'y', 'c'];
+    
+    % plot value for every prototype
+    for i = 1:5 
+        plot(1:100, train_error_prototypes(i, :), colours(i), 'LineWidth',1);
+        hold on
+        h(i) = plot(NaN,NaN, colours(i));
+    end
+    legend(h, '1 prototype', '2 prototypes', '3 prototypes', '4 prototypes', '5 prototypes');
+    xlabel('t');
+    ylabel('Value of error');
+    axis([0.0,100.0,0.0,1.0])
+    grid
+    save_plot('Different_prototypes.pdf', fig);
+end 
 
 function save_plot(name, fig)
     set(fig, 'PaperPosition', [0 0 20 20]);

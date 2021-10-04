@@ -5,6 +5,9 @@ load lvqdata.mat
 
 m = 5; 
 cross_validation(lvqdata, m)
+m=10;
+cross_validation(lvqdata, m)
+
 
 function cross_validation(lvqdata, m)
     % n: learning rate 
@@ -16,21 +19,24 @@ function cross_validation(lvqdata, m)
     train_errors = zeros(1,1);
     test_errors = zeros(1,1);
     
+    train_error_prototypes = zeros(5,100);
+    
+    
     for K = 1:5
         for i = 1:m 
             [train_data, test_data] = split_data(randomized_data, m, i);
             prototypes = choose_prototypes(train_data,K);
             [train_error, prototypes] = do_training(train_data, prototypes, n, t_max); 
             test_error = validation(prototypes, test_data);
-            train_errors(K,i) = train_error; 
+            train_errors(K,i) = train_error(length(train_error)); 
             test_errors(K,i) = test_error;
+            if i == 1
+                train_error_prototypes(K, :) = train_error;
+            end
         end
     end
-
-    disp(train_errors)
-    disp(test_errors)
-    %TODO
     plot_cross_validation(train_errors, test_errors);
+    plot_train_errors(train_error_prototypes);
 end
 
 
@@ -144,7 +150,7 @@ function [error, resulting_prototypes] = do_training(data_points, prototypes, n,
     
     %Set the randomized prototypes and the start of the errors.
     resulting_prototypes = prototypes;
-    error = 0;
+    error = zeros(1,1);
     t = 1;
     
     %greater while loop, will only stop if t_max is reached.
@@ -166,14 +172,13 @@ function [error, resulting_prototypes] = do_training(data_points, prototypes, n,
         end 
         
         %calculating the last error percentage at t_max
-        if t == t_max
-            error = 1 - find_correct_pctg(data_points, resulting_prototypes);
-        end
-      
-        t = t + 1;    
         
-    end  
-end
+        error(t) = 1 - find_correct_pctg(data_points, resulting_prototypes);
+        t = t + 1;    
+
+    end
+      
+end  
 
 %finds the prototype closest to the dataPoint
 %returns only the index of the closest prototype.
@@ -227,96 +232,71 @@ function correct_classification = find_correct_pctg(data_points, prototypes)
 end 
 
 function plot_cross_validation(train_errors, test_errors)
-     % initialising an array which holds all inspected k values
-    k_values = zeros(1,1);
-    % as many values as train_errors
-    for i = 1:length(train_errors)
-        k_values(i) = i;
-    end 
-
     % naming of figure
     fig = figure('Name', 'Error bar of training error');
     %plotting
-    errorbar(k_values,mean(train_errors), min(train_errors), max(train_errors)); 
-        
-    %end
+    errorbar(1:length(train_errors),mean(train_errors), min(train_errors), max(train_errors),'LineWidth',2); 
+    hold on
     % legend
     h = zeros(1,1);
-    h(1) = plot(NaN,NaN);
-    %h(2) = plot(NaN,NaN,'b.');
+    h(1) = plot(NaN,NaN, 'b');
     legend(h, 'Train error');
     %labeling and adjusting of axis
+    xlabel('K');
+    ylabel('Value of error');
+    axis([0.5,5.5,-0.5,1.0])
     grid
     % saving file
+    saved_name = sprintf('Train_errors_P%d.pdf', length(train_errors(1, :)));
+    save_plot(saved_name, fig)
 
-    
-    errorbar(k_values,mean(test_errors), min(test_errors), max(test_errors)); 
-
+     % naming of figure
+    fig = figure('Name', 'Error bar of training error');
+    %plotting
+    errorbar(1:length(train_errors),mean(test_errors), min(test_errors), max(test_errors), 'LineWidth',2);
+    hold on
+    % legend
+    h = zeros(1,1);
+    h(1) = plot(NaN,NaN, 'b');
+    legend(h, 'Test error');
+    %labeling and adjusting of axis
+    xlabel('K');
+    ylabel('Value of error');
+    axis([0.5,5.5,-0.5,1.0])
+    grid
+    % saving file
+    saved_name = sprintf('Test_errors_P%d.pdf', length(train_errors(1, :)));
+    save_plot(saved_name, fig)
 end
 
+% plots the learning curve for a given array of normalized errors
+function plot_train_errors(train_error_prototypes)
+    train_error_prototypes
+   fig = figure('Name','Learning curve with differnt amounts of prototypes');
+    h = zeros(2,1);
+    %TODO -> create string array
+    names = [];
+    colours = ['r', 'g', 'b', 'y', ''];
+    
+    for i = 1:5 
+        plot(1:100, train_error_prototypes(i, :), colours(i));
+        hold on
+        h(i) = plot(NaN,NaN, colours(i));
+        hold on
+        %name = sprintf('Error rate with %d prototypes', i);
+        %name 
+        %names(i) = name;
+    end
+    legend(h, '1', '2','3','4','5');
+    xlabel('t');
+    ylabel('Value of error');
+    axis([0.0,100.0,0.0,1.0])
+    grid
+    save_plot('Different_prototypes', fig);
+end 
+
 function save_plot(name, fig)
-    set(fig, 'XLabel', 'K');
-    set(fig, 'YLabel', 'K');
-    set(fig, 'Axis', [0,5,0.0,1.0]);
     set(fig, 'PaperPosition', [0 0 20 20]);
     set(fig, 'PaperSize', [20 20]);
     saveas(fig, name);
 end 
-
-% plots the classes and corresponding prototypes with
-% different colours
-function plotPrototypesAndPoints(pointsWithClasses, prototypes, numberOfPrototypes)
-    %add the assumed class to the 4th column of the method
-    for index = 1:length(pointsWithClasses) 
-        closestPrototype = find_closest_prototype(pointsWithClasses(index,:), prototypes, numberOfPrototypes);
-        pointsWithClasses(index, 4) = prototypes(closestPrototype, 3);
-    end 
-    %plotting class values 
-    figureName = sprintf('Points with %d prototypes', numberOfPrototypes);
-    figure('Name',figureName);
-    for i = 1:100 
-        if pointsWithClasses(i, 4) == 1
-            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'ro');
-        elseif pointsWithClasses(i, 4) == 2
-            plot(pointsWithClasses(i,1), pointsWithClasses(i,2), 'bo');
-        end
-        hold on
-    end 
-    
-    %plotting the prototypes 
-    for i = 1:numberOfPrototypes 
-        if prototypes(i, 3) == 1 
-            plot(prototypes(i, 1), prototypes(i, 2), 'rX');
-        else 
-            plot(prototypes(i, 1), prototypes(i, 2), 'bX');
-        end 
-        hold on
-    end 
-    
-    h = zeros(4,1);
-    h(1) = plot(NaN,NaN,'ro');
-    h(2) = plot(NaN,NaN,'bo');
-    h(3) = plot(NaN,NaN,'rX');
-    h(4) = plot(NaN,NaN,'bX');
-    legend(h, 'Class 1', 'Class 2', 'Prototype class 1', 'Prototype class 2');
-    grid
-end 
-
-% plots the learning curve for a given array of normalized errors
-function plotLearningCurve(errors, t_max, numberOfPrototypes) 
-    figureName = sprintf('Learning curve with %d prototypes', numberOfPrototypes);
-    figure('Name',figureName);
-    modifiedErrors = zeros(t_max, 1);
-    for i = 1:t_max 
-       modifiedErrors(i) = errors(i); 
-    end
-    plot(1:t_max, modifiedErrors, 'r-', 1:t_max, modifiedErrors, 'r.')
-    hold on
-    h = zeros(2,1);
-    h(1) = plot(NaN,NaN,'r.');
-    h(2) = plot(NaN,NaN,'w.');
-    legend(h, 'Error rate', 'X-axis: number of epochs');
-    grid
-end 
-
-
