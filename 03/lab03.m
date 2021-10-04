@@ -5,8 +5,8 @@ load lvqdata.mat
 
 m = 5; 
 cross_validation(lvqdata, m)
-%m=10;
-%cross_validation(lvqdata, m)
+m=10;
+cross_validation(lvqdata, m)
 
 
 function cross_validation(lvqdata, m)
@@ -116,22 +116,18 @@ function prototypes = choose_prototypes(points_with_classes, K)
                 
                 testsize_a = unique(prototypes,"rows");
                 
-                
                 dummy = prototypes(i,:);
-                
                 
                 prototypes(i,:) = points_with_classes(randomIndex,(1:3));
                 
                 testsize_b = unique(prototypes,"rows");
                
-                
                 if length(testsize_b(:,1)) >= length(testsize_a(:,1))
                       correct = 1;
                     
                 %Case for last member of array      
                 elseif length(testsize_b(:,1)) == length(testsize_a(:,1))
                     if(any(prototypes(:,3) == 0.0))
-                        print("dead air")
                     else
                         correct = 1;
                     end
@@ -235,7 +231,9 @@ function plot_cross_validation(train_errors, test_errors)
     % naming of figure
     fig = figure('Name', 'Error bar of training error');
     %plotting
-    errorbar(1:length(train_errors),mean(train_errors), min(train_errors), max(train_errors),'LineWidth',2); 
+    standard_deviation = std(train_errors);
+    average = mean(train_errors);
+    errorbar(1:length(train_errors),average, standard_deviation,'LineWidth',2); 
     hold on
     % legend
     h = zeros(1,1);
@@ -244,7 +242,8 @@ function plot_cross_validation(train_errors, test_errors)
     %labeling and adjusting of axis
     xlabel('K');
     ylabel('Value of error');
-    axis([0.5,5.5,-0.5,1.0])
+    max = length(train_errors) + 0.5;
+    axis([0.5,max,0.0,0.5])
     grid
     % saving file
     saved_name = sprintf('Train_errors_P%d.pdf', length(train_errors(1, :)));
@@ -253,7 +252,9 @@ function plot_cross_validation(train_errors, test_errors)
      % naming of figure
     fig = figure('Name', 'Error bar of training error');
     %plotting
-    errorbar(1:length(train_errors),mean(test_errors), min(test_errors), max(test_errors), 'LineWidth',2);
+    standard_deviation = std(test_errors);
+    average = mean(test_errors);
+    errorbar(1:length(train_errors),average, standard_deviation, 'LineWidth',2);
     hold on
     % legend
     h = zeros(1,1);
@@ -262,7 +263,7 @@ function plot_cross_validation(train_errors, test_errors)
     %labeling and adjusting of axis
     xlabel('K');
     ylabel('Value of error');
-    axis([0.5,5.5,-0.5,1.0])
+    axis([0.5,max,0.0,0.5])
     grid
     % saving file
     saved_name = sprintf('Test_errors_P%d.pdf', length(train_errors(1, :)));
@@ -284,7 +285,7 @@ function plot_train_errors(train_error_prototypes)
     legend(h, '1 prototype', '2 prototypes', '3 prototypes', '4 prototypes', '5 prototypes');
     xlabel('t');
     ylabel('Value of error');
-    axis([0.0,100.0,0.0,1.0])
+    axis([0.0,100.0,0.0,0.5])
     grid
     save_plot('Different_prototypes.pdf', fig);
 end 
