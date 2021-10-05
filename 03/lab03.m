@@ -114,25 +114,25 @@ function prototypes = choose_prototypes(points_with_classes, K)
             
             if points_with_classes(randomIndex,3) == class
                 
-                testsize_a = unique(prototypes,"rows");
+                size = unique(prototypes,"rows");
                 
-                dummy = prototypes(i,:);
+                temp = prototypes(i,:);
                 
                 prototypes(i,:) = points_with_classes(randomIndex,(1:3));
                 
                 testsize_b = unique(prototypes,"rows");
                
-                if length(testsize_b(:,1)) >= length(testsize_a(:,1))
+                if length(testsize_b(:,1)) >= length(size(:,1))
                       correct = 1;
                     
                 %Case for last member of array      
-                elseif length(testsize_b(:,1)) == length(testsize_a(:,1))
+                elseif length(testsize_b(:,1)) == length(size(:,1))
                     if(any(prototypes(:,3) == 0.0))
                     else
                         correct = 1;
                     end
                 else
-                    prototypes(i,:) = dummy;
+                    prototypes(i,:) = temp;
                 end
             end 
            % iterations = iterations + 1
