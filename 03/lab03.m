@@ -2,13 +2,15 @@ edit lab03
 
 load lvqdata.mat
  
-
+% cross_validation is the function calculating errors and validating them. 
+% In the end the errors are plotted
 m = 5; 
 cross_validation(lvqdata, m)
 m=10;
 cross_validation(lvqdata, m)
 
-
+% function taking the data set and the number of partitions and then
+% fulfilling requirements for practical 3
 function cross_validation(lvqdata, m)
     % n: learning rate 
     n = 0.002; 
@@ -39,7 +41,7 @@ function cross_validation(lvqdata, m)
     plot_train_errors(train_error_prototypes);
 end
 
-
+% function for the validation of given test_data and prototoypes
 function test_error = validation(prototypes, test_data)
     errors = 0; 
     
@@ -227,6 +229,7 @@ function correct_classification = find_correct_pctg(data_points, prototypes)
     correct_classification = curCorrect/size;
 end 
 
+% function plotting the cross validation for both test and train errors
 function plot_cross_validation(train_errors, test_errors)
     % naming of figure
     fig = figure('Name', 'Error bar of training error');
@@ -290,6 +293,7 @@ function plot_train_errors(train_error_prototypes)
     save_plot('Different_prototypes.pdf', fig);
 end 
 
+% function to save the plot
 function save_plot(name, fig)
     set(fig, 'PaperPosition', [0 0 20 20]);
     set(fig, 'PaperSize', [20 20]);
