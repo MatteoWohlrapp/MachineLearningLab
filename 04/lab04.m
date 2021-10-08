@@ -12,14 +12,46 @@ t_max = 1000;
 
 %vector_quantization(vqdata.w6_1x, K, n, t_max);
 %vector_quantization_K2_K4(vqdata.w6_1x, t_max);
-ellbow(vqdata.w6_1x, n, t_max);
+%ellbow(vqdata.w6_1x, n, t_max);
+
+%test_learning_rate(vqdata.w6_1x, t_max)
+test_t_max(vqdata.w6_1x, n)
 
 
 % function calculating vector quantization
-function vector_quantization(points, K, n, t_max)
+function last_H_VQ = vector_quantization(points, K, n, t_max)
     prototypes = select_prototypes(points, K);
     H_VQ = do_training(points, prototypes, n, t_max); 
-    plot_learning_curve(H_VQ, n, K);
+    %plot_learning_curve(H_VQ, n, K);
+    last_H_VQ = H_VQ(length(H_VQ));
+end 
+
+function test_learning_rate(points, t_max)
+    n = 0.0;
+    learning_rate_H_VQ = zeros(1,2);
+    index = 1; 
+    while n < 1
+        H_VQ = vector_quantization(points, 2, n, t_max);
+        learning_rate_H_VQ(index,:) = [n, H_VQ];
+        index = index + 1;
+        n = n + 0.05;
+    end
+    
+    plot_best_learning_rate(learning_rate_H_VQ);
+end 
+
+function test_t_max(points, n)
+    t_max = 1;
+    t_max_H_VQ = zeros(1,2);
+    index = 1; 
+    while t_max < 2000
+        H_VQ = vector_quantization(points, 2, n, t_max);
+        t_max_H_VQ(index,:) = [t_max, H_VQ];
+        index = index + 1;
+        t_max = t_max + 200;
+    end
+    
+    plot_best_t_max(t_max_H_VQ);
 end 
 
 % function to plot and calculate for 3 learning rates for K = 2 and K = 4
@@ -76,7 +108,6 @@ function H_VQs = do_training(points, prototypes, n, t_max)
         H_VQ = calculate_error(points, prototypes);
         H_VQs(t) = H_VQ;
     end
-    length(H_VQs)
 end 
 
 % function to find the closest prototype according to the squared euclidiean distance
@@ -168,6 +199,41 @@ function plot_ellbow(final_H_VQ, n)
     grid
     save_plot(figure_name, fig);
 end 
+
+function plot_best_learning_rate(lr_HVQ)
+    figure_name = sprintf('Best_learning_rate.pdf');
+    fig = figure('Name',figure_name);
+    h = zeros(1,1);
+    h(1) = plot(NaN,NaN, '.r');
+    hold on
+    
+    % plot value for every epoch
+    plot(lr_HVQ(:,1), lr_HVQ(:,2), '-r.', 'LineWidth',1);
+
+    legend(h, 'Final H_{VQ}');
+    xlabel('learning rate');
+    ylabel('Final value of H_{VQ}');
+    grid
+    save_plot(figure_name, fig);
+end 
+
+function plot_best_t_max(t_max_H_VQ)
+    figure_name = sprintf('Best_t_max.pdf');
+    fig = figure('Name',figure_name);
+    h = zeros(1,1);
+    h(1) = plot(NaN,NaN, '.r');
+    hold on
+    
+    % plot value for every epoch
+    plot(t_max_H_VQ(:,1), t_max_H_VQ(:,2), '-r.', 'LineWidth',1);
+
+    legend(h, 'Final H_{VQ}');
+    xlabel('t_max');
+    ylabel('Final value of H_{VQ}');
+    grid
+    save_plot(figure_name, fig);
+end
+
 
 % function to save the plot
 function save_plot(name, fig)

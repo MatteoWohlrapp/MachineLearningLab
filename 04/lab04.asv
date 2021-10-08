@@ -8,15 +8,47 @@ K = 1;
 
 % try different values
 n = 0.1; 
-t_max = 300; 
+t_max = 5000; 
 
-vector_quantization(vqdata.w6_1x, K, n, t_max);
+%vector_quantization(vqdata.w6_1x, K, n, t_max);
+vector_quantization_K2_K4(vqdata.w6_1x, t_max);
+%ellbow(vqdata.w6_1x, n, t_max);
+
 
 % function calculating vector quantization
-function vector_quantization(points, K, n, t_max)
+function last_H_VQ = vector_quantization(points, K, n, t_max)
     prototypes = select_prototypes(points, K);
     H_VQ = do_training(points, prototypes, n, t_max); 
-    plot_learning_curve(H_VQ, n, K);
+    %plot_learning_curve(H_VQ, n, K);
+    last_H_VQ = H_VQ(length(H_VQ));
+end 
+
+function test_learning_rate(points, t_max)
+    n = 0.0;
+    learning_rate_H_VQ = zeros(1,2);
+    index = 1; 
+    while n < 1
+        H_VQ = vector_quantization(points, 2, n, t_max);
+        learning_rate_H_VQ(index,:) = [n, H_VQ];
+        index = index + 1;
+        n = n + 0.05;
+    end
+    
+    plot_best_learning_rate(learning_rate_H_VQ);
+end 
+
+function test_t_max(points, n)
+    t_max = 0;
+    t_max_H_VQ = zeros(1,2);
+    index = 1; 
+    while t_max < 10000
+        H_VQ = vector_quantization(points, 2, n, t_max);
+        t_max_H_VQ(index,:) = [n, H_VQ];
+        index = index + 1;
+        t_max = t_max + 200;
+    end
+    
+    plot_best_t_max(t_max_H_VQ);
 end 
 
 % function to plot and calculate for 3 learning rates for K = 2 and K = 4
@@ -28,14 +60,18 @@ function vector_quantization_K2_K4(points, t_max)
         H_VQ_K2 = do_training(points, prototypes_K2, ns(i), t_max); 
         prototypes_K4 = select_prototypes(points, 4); 
         H_VQ_K4 = do_training(points, prototypes_K4, ns(i), t_max); 
-        plot_learning_curve_K2_K4(H_VQ_K2, H_VQ_K4, n);
+        plot_learning_curve_K2_K4(H_VQ_K2, H_VQ_K4, ns(i));
     end 
 end 
 
 function ellbow(points, n, t_max)
+    final_H_VQs = zeros(1,1);
     for K = 1:5
-        
+        prototypes = select_prototypes(points, K);
+        H_VQ = do_training(points, prototypes, n, t_max); 
+        final_H_VQs(K) = H_VQ(t_max);
     end
+    plot_ellbow(final_H_VQs, n);
 end 
 
 % function to select a random point for the prototypes
@@ -69,7 +105,6 @@ function H_VQs = do_training(points, prototypes, n, t_max)
         H_VQ = calculate_error(points, prototypes);
         H_VQs(t) = H_VQ;
     end
-    length(H_VQs)
 end 
 
 % function to find the closest prototype according to the squared euclidiean distance
@@ -145,8 +180,8 @@ function plot_learning_curve_K2_K4(H_VQs_K2, H_VQs_K4, n)
     save_plot(figure_name, fig);
 end 
 
-function plot_ellbow(final_H_VQ) 
-    figure_name = sprintf('Ellbow.pdf');
+function plot_ellbow(final_H_VQ, n) 
+    figure_name = sprintf('Ellbow_n%d.pdf', n);
     fig = figure('Name',figure_name);
     h = zeros(1,1);
     h(1) = plot(NaN,NaN, '.r');
@@ -161,6 +196,26 @@ function plot_ellbow(final_H_VQ)
     grid
     save_plot(figure_name, fig);
 end 
+
+function plot_best_learning_rate(lr_HVQ)
+    figure_name = sprintf('Best_learning_rate.pdf');
+    fig = figure('Name',figure_name);
+    h = zeros(1,1);
+    h(1) = plot(NaN,NaN, '.r');
+    hold on
+    
+    % plot value for every epoch
+    plot(lr_HVQ(:,1), lr_HVQ(:,2), '-r.', 'LineWidth',1);
+
+    legend(h, 'Final H_{VQ}');
+    xlabel('learning rate');
+    ylabel('Final value of H_{VQ}');
+    grid
+    save_plot(figure_name, fig);
+end 
+
+function plot_best_t_max(t_max_H_VQ);
+
 
 % function to save the plot
 function save_plot(name, fig)
