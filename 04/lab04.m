@@ -1,4 +1,4 @@
-edit lab04
+%doedit lab04
 
 % w6_1x is array in struct
 % 1000x2 double array
@@ -13,9 +13,10 @@ t_max = 1000;
 %vector_quantization(vqdata.w6_1x, K, n, t_max);
 %vector_quantization_K2_K4(vqdata.w6_1x, t_max);
 %ellbow(vqdata.w6_1x, n, t_max);
+ellbow(vqdata.w6_1x,n,100)
 
 %test_learning_rate(vqdata.w6_1x, t_max)
-test_t_max(vqdata.w6_1x, n)
+%test_t_max(vqdata.w6_1x, n)
 
 
 % function calculating vector quantization
@@ -71,7 +72,7 @@ function ellbow(points, n, t_max)
     final_H_VQs = zeros(1,1);
     for K = 1:5
         prototypes = select_prototypes(points, K);
-        H_VQ = do_training(points, prototypes, n, t_max); 
+        H_VQ = do_training(points, prototypes, n, t_max,K); 
         final_H_VQs(K) = H_VQ(t_max);
     end
     plot_ellbow(final_H_VQs, n);
@@ -85,14 +86,52 @@ function prototypes = select_prototypes(points, K)
         prototypes(i,:) = points(index,:);
     end   
 end 
+function x = plot_prototype_path(prototype_history, first_protoype, points)
+    x = 1;
+    figureName = sprintf('Points with %d prototypes.pdf', length(first_protoype(:,1)));
+    fig = figure("Name",figureName);
 
+    %Plot the points
+    for i = 1:length(points(:,1))
+        plot(points(i,1),points(i,2),'ro')
+        hold on
+    end
+
+    %now we plot the protototype history. First one is black, last one is
+    %blue, the ones in between are grey.
+    for i = 1:length(prototype_history(:,1,1))
+        %if last one, paint yellow
+        if i == length(prototype_history(:,1,1))
+            plot(prototype_history(i,:,1),prototype_history(i,:,2),'yX','MarkerSize',10,LineWidth=5)
+            hold on
+        else
+            plot(prototype_history(i,:,1),prototype_history(i,:,2),'bX')
+            hold on
+        end
+    end
+
+    plot(first_protoype(:,1),first_protoype(:,2),'gX',MarkerSize=10,LineWidth=10)
+
+    h = zeros(4,1);
+    h(1) = plot(NaN,NaN,'ro');
+    h(2) = plot(NaN,NaN,'yX');
+    h(3) = plot(NaN,NaN,'bX');
+    h(4) = plot(NaN,NaN,'gX');
+    legend(h, 'Original Points', 'Final Prototypes', 'Intermediary Prototypes', 'Initial Prototypes');
+    grid
+    save_plot(figureName, fig);
+
+end
 % function to train the prototypes, returns the error by means of the
 % distance
-function H_VQs = do_training(points, prototypes, n, t_max)
+function H_VQs = do_training(points, prototypes, n, t_max,K)
     
     H_VQs = zeros(t_max,1);
-    
-    
+    %to have the trajectory we must remember the places of all prototypes
+    %from 1  to t_max
+    prototype_history = zeros(t_max,K,2);
+    first_prototype = prototypes;
+
     for t = 1:t_max
         %randperm randomize the rows while keeping the columns intact. 
         %Source: https://www.mathworks.com/matlabcentral/answers/30345-swap-matrix-row-randomly
@@ -105,9 +144,16 @@ function H_VQs = do_training(points, prototypes, n, t_max)
             updated_prototype = update_prototype(point, closest_prototype, n); 
             prototypes(closest_prototype_index, :) = updated_prototype;
         end
+        
+        %Put the resulting prototype after each epoch
+        %in the prototype history
+        prototype_history(t,:,:) = prototypes; 
         H_VQ = calculate_error(points, prototypes);
         H_VQs(t) = H_VQ;
     end
+    %At the end of training we can, then, plot the image.
+    plot_prototype_path(prototype_history,first_prototype,points);
+
 end 
 
 % function to find the closest prototype according to the squared euclidiean distance

@@ -1,4 +1,4 @@
-edit lab01
+    edit lab01
 
 load lvqdata.mat
 
