@@ -8,7 +8,7 @@ K = 1;
 
 % try different values
 n = 0.1; 
-t_max = 1000; 
+t_max = 800; 
 
 %vector_quantization(vqdata.w6_1x, K, n, t_max);
 %vector_quantization_K2_K4(vqdata.w6_1x, t_max);
@@ -56,7 +56,7 @@ end
 
 % function to plot and calculate for 3 learning rates for K = 2 and K = 4
 function vector_quantization_K2_K4(points, t_max)
-    ns = [0.1,0.2,0.3];
+    ns = [0.01,0.1,0.9];
     
     for i = 1:length(ns)
         prototypes_K2 = select_prototypes(points, 2); 
@@ -228,7 +228,7 @@ function plot_best_t_max(t_max_H_VQ)
     plot(t_max_H_VQ(:,1), t_max_H_VQ(:,2), '-r.', 'LineWidth',1);
 
     legend(h, 'Final H_{VQ}');
-    xlabel('t_max');
+    xlabel('t_{max}');
     ylabel('Final value of H_{VQ}');
     grid
     save_plot(figure_name, fig);
