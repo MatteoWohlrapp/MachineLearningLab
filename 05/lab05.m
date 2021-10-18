@@ -73,6 +73,19 @@ function x = complete(dists_1,dists_2)
 
 end
 
+%Average
+function x = average(dists_1,dists_2)
+    
+    dist_mat = make_dist_matrix(dists_1, dists_2);
+    
+    dims = length(dists_1(:,1)) * length(dists_2(:,1));
+    
+    x = sum(dist_mat,"all");
+
+    x = x/dims;
+
+end
+
 %We can use this in single linkage, by choosing the smallest value found
 %here. Same goes for complete linkage, this time, choosing the highest
 %value found here. Average linkage can be done here too by simply adding
@@ -143,11 +156,11 @@ function final_members = iterator_single(class_members,K)
             %We must remember to only use the lower triangle and ignore the
             %middle.
             for j = 1:length(final_members)
-                %The method we`ll use can be passed into the function
-                %This means we dont have to create a whole iteration cicle
-                %for single, complete etc.
-                distance_matrix(i,j) = method(final_members{i},final_members{j}); %Method used to find value we want. 
+
+                %for single, complete etc. simply un-comment one.
+                %distance_matrix(i,j) = single(final_members{i},final_members{j});  
                 %distance_matrix(i,j) = complete(final_members{i},final_members{j});
+                distance_matrix(i,j) = average(final_members{i},final_members{j});
             end
         end 
 
