@@ -3,13 +3,13 @@ load data_clustering.csv;
 %linkage_and_show('single',data_clustering);
 %linkage_and_show('average',data_clustering);
 %linkage_and_show('complete',data_clustering);
-%linkage_and_show('ward',data_clustering);
+linkage_and_show('ward',data_clustering);
 
 %First, we need to create a matrix of classes.
 %We do this using cell arrays.
 
 %every point is a class at the start.
-classes = [1:200]; %simple vector for the classes
+%classes = [1:200]; %simple vector for the classes
 
 %Class members vector. Starts with one value for each class (which is why
 %it is N_classesxN_members_classX xy_values
@@ -23,7 +23,23 @@ for i = 1:200
 end
 
 
-final_members = iterator_single(class_members,4)
+%final_members = iterator_single(class_members,4)
+%cluster1 = final_members{1}
+%cluster2 = final_members{2}
+%cluster3 = final_members{3}
+%cluster4 =final_members{4}
+
+%pointsize = 3;
+%scatter(cluster1(:,1),cluster1(:,2),pointsize,"blue")
+%hold on
+%scatter(cluster2(:,1),cluster2(:,2),pointsize,"red")
+%hold on
+%scatter(cluster3(:,1),cluster3(:,2),pointsize,"green")
+%hold on
+%scatter(cluster4(:,1),cluster4(:,2),pointsize,"yellow")
+
+
+
 
 %function for printing, and saving the clustering data as defined.
 function x = linkage_and_show(method,data)
@@ -37,6 +53,9 @@ function x = linkage_and_show(method,data)
     yline(median([x(end-3,3),x(end-2,3)]),'--b','K = 4')
     
     saveas(fig,method + ".pdf");
+
+    T = cluster(x,"maxclust",4)
+    gscatter(data(:,1),data(:,2),T)
 
 end    
 
@@ -92,6 +111,8 @@ end
 %the whole matrix and averaging it by the 
 %number of connections (|C1| * |C2|).
 %Ward linkage probably cannot be done here.
+%NX2 -- 0.1 0.2
+%       0.3 0.4
 function dist_mat = make_dist_matrix(dists_1, dists_2)
 
     %tecnically we only used the lower side of this matrix.
@@ -116,7 +137,7 @@ function [m_i,m_j] = find_smallest(matrix)
     m_i = 0;
     m_j = 0;
 
-    for i = 1:length(matrix)
+    for i = 1:length(matrix(:,1))
        for j = 1:(i-1)
             if matrix(i,j) < smallest
                 m_i = i;
@@ -166,7 +187,7 @@ function final_members = iterator_single(class_members,K)
 
         %Find the smallest, treat the middle values ixi (which will probably be
         %0) as to make them uneligible 
-        [m_i, m_j] = find_smallest(distance_matrix)
+        [m_i, m_j] = find_smallest(distance_matrix);
 
         %With them found, we give the values in class j to class i.
         manipulator1 = final_members{m_i};

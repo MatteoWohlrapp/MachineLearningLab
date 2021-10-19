@@ -9,7 +9,7 @@ load data_clustering.csv;
 %We do this using cell arrays.
 
 %every point is a class at the start.
-classes = [1:200]; %simple vector for the classes
+%classes = [1:200]; %simple vector for the classes
 
 %Class members vector. Starts with one value for each class (which is why
 %it is N_classesxN_members_classX xy_values
@@ -23,7 +23,23 @@ for i = 1:200
 end
 
 
-final_members = iterator_single(class_members,199);
+final_members = iterator_single(class_members,4)
+cluster1 = final_members{1}
+cluster2 = final_members{2}
+cluster3 = final_members{3}
+cluster4 =final_members{4}
+
+pointsize = 3;
+scatter(cluster1(:,1),cluster1(:,2),pointsize,"blue")
+hold on
+scatter(cluster2(:,1),cluster2(:,2),pointsize,"red")
+hold on
+scatter(cluster3(:,1),cluster3(:,2),pointsize,"green")
+hold on
+scatter(cluster4(:,1),cluster4(:,2),pointsize,"yellow")
+
+
+
 
 %function for printing, and saving the clustering data as defined.
 function x = linkage_and_show(method,data)
@@ -70,6 +86,19 @@ function x = complete(dists_1,dists_2)
     [M,I] = max(M);
 
     x = M;
+
+end
+
+%Average
+function x = average(dists_1,dists_2)
+    
+    dist_mat = make_dist_matrix(dists_1, dists_2);
+    
+    dims = length(dists_1(:,1)) * length(dists_2(:,1));
+    
+    x = sum(dist_mat,"all");
+
+    x = x/dims;
 
 end
 
@@ -143,30 +172,27 @@ function final_members = iterator_single(class_members,K)
             %We must remember to only use the lower triangle and ignore the
             %middle.
             for j = 1:length(final_members)
-                %The method we`ll use can be passed into the function
-                %This means we dont have to create a whole iteration cicle
-                %for single, complete etc.
-                %distance_matrix(i,j) = method(final_members{i},final_members{j}); %Method used to find value we want. 
-                distance_matrix(i,j) = single(final_members{i},final_members{j});
+
+                %for single, complete etc. simply un-comment one.
+                distance_matrix(i,j) = single(final_members{i},final_members{j});  
+                %distance_matrix(i,j) = complete(final_members{i},final_members{j});
+                %distance_matrix(i,j) = average(final_members{i},final_members{j});
             end
         end 
 
         %Find the smallest, treat the middle values ixi (which will probably be
         %0) as to make them uneligible 
-        [m_i, m_j] = find_smallest(distance_matrix)
+        [m_i, m_j] = find_smallest(distance_matrix);
 
         %With them found, we give the values in class j to class i.
         manipulator1 = final_members{m_i};
         manipulator2 = final_members{m_j};
-        manipulator = [manipulator1;manipulator2]
+        manipulator = [manipulator1;manipulator2];
 
-        final_members{i} = manipulator;
-        answer_1 = final_members{m_i}
-        answer_2 = final_members{j}
+        final_members{m_i} = manipulator;
         %we have to use "()" here to delete it.
-        final_members(j) = [];
-        answer_3 = final_members{i}
-        answer_4 = final_members{j}
+        final_members(m_j) = [];
+
     end 
 end 
 
