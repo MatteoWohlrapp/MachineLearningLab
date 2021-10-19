@@ -23,7 +23,7 @@ for i = 1:200
 end
 
 
-final_members = iterator_single(class_members,199);
+final_members = iterator_single(class_members,4); 
 
 %function for printing, and saving the clustering data as defined.
 function x = linkage_and_show(method,data)
@@ -70,6 +70,19 @@ function x = complete(dists_1,dists_2)
     [M,I] = max(M);
 
     x = M;
+
+end
+
+%Average
+function x = average(dists_1,dists_2)
+    
+    dist_mat = make_dist_matrix(dists_1, dists_2);
+    
+    dims = length(dists_1(:,1)) * length(dists_2(:,1));
+    
+    x = sum(dist_mat,"all");
+
+    x = x/dims;
 
 end
 
@@ -143,11 +156,11 @@ function final_members = iterator_single(class_members,K)
             %We must remember to only use the lower triangle and ignore the
             %middle.
             for j = 1:length(final_members)
-                %The method we`ll use can be passed into the function
-                %This means we dont have to create a whole iteration cicle
-                %for single, complete etc.
-                %distance_matrix(i,j) = method(final_members{i},final_members{j}); %Method used to find value we want. 
-                distance_matrix(i,j) = single(final_members{i},final_members{j});
+
+                %for single, complete etc. simply un-comment one.
+                %distance_matrix(i,j) = single(final_members{i},final_members{j});  
+                %distance_matrix(i,j) = complete(final_members{i},final_members{j});
+                distance_matrix(i,j) = average(final_members{i},final_members{j});
             end
         end 
 
@@ -158,16 +171,44 @@ function final_members = iterator_single(class_members,K)
         %With them found, we give the values in class j to class i.
         manipulator1 = final_members{m_i};
         manipulator2 = final_members{m_j};
-        manipulator = [manipulator1;manipulator2]
+        manipulator = [manipulator1;manipulator2];
 
-        final_members{i} = manipulator;
-        answer_1 = final_members{m_i}
-        answer_2 = final_members{j}
+        final_members{m_i} = manipulator;
         %we have to use "()" here to delete it.
-        final_members(j) = [];
-        answer_3 = final_members{i}
-        answer_4 = final_members{j}
+        final_members(m_j) = [];
+        
     end 
+    plot_clusters(final_members, 'average');
+end 
+
+function plot_clusters(final_clusters, method)
+    K = length(final_clusters);
+    colours = ['r.', 'g.', 'b.', 'y.'];
+    legend_text = ['Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster 4'];
+    figureName = append(sprintf('%d_clusters_', K), method);
+    fig = figure("Name",figureName);
+
+    for i = 2:K
+        plot(final_clusters{i}, colours(i));
+        hold on
+    end 
+    legend_colours = zeros(K,1);
+    for i = 1:K
+        legend_colours(i) = plot(NaN,NaN, colours(i));
+    end
+    legend(legend_colours, legend_text);
+    xlabel('x');
+    ylabel('y');
+    grid
+    save_plot(figureName, fig);
+end 
+
+% function to save the plot
+function save_plot(name, fig)
+    saved_name = append(name, '.pdf'); 
+    set(fig, 'PaperPosition', [0 0 20 20]);
+    set(fig, 'PaperSize', [20 20]);
+    saveas(fig, saved_name);
 end 
 
 

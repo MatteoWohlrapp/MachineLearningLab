@@ -23,7 +23,7 @@ for i = 1:200
 end
 
 
-final_members = iterator_single(class_members,4)
+final_members = iterator_single(class_members,4); 
 
 %function for printing, and saving the clustering data as defined.
 function x = linkage_and_show(method,data)
@@ -51,6 +51,8 @@ function x = single(dists_1,dists_2)
     
     dist_mat = make_dist_matrix(dists_1, dists_2);
 
+    test = min(dist_mat);
+    test = min(test)
     [M,I] = min(dist_mat);
 
     [M,I] = min(M);
@@ -158,9 +160,9 @@ function final_members = iterator_single(class_members,K)
             for j = 1:length(final_members)
 
                 %for single, complete etc. simply un-comment one.
-                %distance_matrix(i,j) = single(final_members{i},final_members{j});  
+                distance_matrix(i,j) = single(final_members{i},final_members{j});  
                 %distance_matrix(i,j) = complete(final_members{i},final_members{j});
-                distance_matrix(i,j) = average(final_members{i},final_members{j});
+                %distance_matrix(i,j) = average(final_members{i},final_members{j});
             end
         end 
 
@@ -176,8 +178,40 @@ function final_members = iterator_single(class_members,K)
         final_members{m_i} = manipulator;
         %we have to use "()" here to delete it.
         final_members(m_j) = [];
-
+        
     end 
+    plot_clusters(final_members, 'average');
+end 
+
+function plot_clusters(final_clusters, method)
+    K = length(final_clusters);
+    colours = ['r.', 'g.', 'b.', 'y.'];
+    text = ['Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster 4'];
+    figureName = append(sprintf('%d_clusters_', K), method);
+    fig = figure("Name",figureName);
+
+    for i = 1:K
+        plot(final_clusters{i}, colours(i));
+        hold on
+    end 
+    legend_colours = zeros(K,1);
+    legend_text = text(1:K);
+    for i = 1:K
+        legend_colours(i) = plot(NaN,NaN, colours(i));
+    end
+    legend(legend_colours, legend_text);
+    xlabel('x');
+    ylabel('y');
+    grid
+    save_plot(figureName, fig);
+end 
+
+% function to save the plot
+function save_plot(name, fig)
+    saved_name = append(name, '.pdf'); 
+    set(fig, 'PaperPosition', [0 0 20 20]);
+    set(fig, 'PaperSize', [20 20]);
+    saveas(fig, saved_name);
 end 
 
 
