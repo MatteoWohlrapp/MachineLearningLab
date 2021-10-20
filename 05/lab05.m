@@ -4,7 +4,7 @@
 % wss and bss calculation also has seperate values
 data = readmatrix('data_clustering.csv');
 
-%dendogram_cluster_silhouette(data);
+dendogram_cluster_silhouette(data);
 plot_bss_wss(data);
 
 
@@ -18,7 +18,7 @@ function dendogram_cluster_silhouette(data)
         for K = 2:4
             clust = plot_cluster(methods(i), link, data, K); 
             plot_silhouette(methods(i), clust, data, K);
-        end
+       end
     end
 end 
 
@@ -34,6 +34,8 @@ function link = plot_dendogram(method, data)
     yline(median([link(end-1,3),link(end,3)]),'--b','K = 2')
     yline(median([link(end-2,3),link(end-1,3)]),'--b','K = 3')
     yline(median([link(end-3,3),link(end-2,3)]),'--b','K = 4')
+    xlabel('Data vector');
+    ylabel('Proximity');
     grid
     save_plot(fig, method + "_dendogram.pdf");
 end    
