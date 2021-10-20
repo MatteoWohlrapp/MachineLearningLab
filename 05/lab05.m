@@ -60,6 +60,12 @@ end
 function plot_silhouette(method, clust, data, K)  
     figure_name = append(method, sprintf('_silhouette_K%d', K));
     fig = figure('Name', figure_name);
+    s = silhouette(data,clust);
+    
+    %added part to display in table
+    disp(figure_name)
+    disp(mean(s))
+    %end of added portion
     
     silhouette(data, clust);
     xlabel('Silhouette coefficient values');
