@@ -1,11 +1,47 @@
 
-data = readmatrix('data_clustering.csv');
+D = readmatrix('data_clustering.csv');
 
-eps = 0.005; 
-Min_Pts = 3; 
 
-Ps = DBSCAN(data, eps, Min_Pts); 
-plot_cluster(data, Ps, eps, Min_Pts);
+%calculate_epsilon_plot_nn_graph(D, 4, 6)
+%experimental_results_plot(D)
+%calculate_silhouette_score(D)
+
+% function to plot the three different clusters for varying Min_Pts
+% according to the results section in the assignment 
+% input: Data vectors D
+function experimental_results_plot(D)
+    Min_Pts = [3,4,5];
+    % optimal espsilon value for min_pts derived from k-NN graph
+    epsilons = [0.044209, 0.0549776, 0.0576649];
+
+    for i = 1:length(Min_Pts)
+        Ps = DBSCAN(D, epsilons(i), Min_Pts(i)); 
+        plot_cluster(D, Ps, epsilons(i), Min_Pts(i));
+    end
+end
+
+% function to calculate the average epsilon and plot the k-NN graph for k
+% from k_from to k_to according to the results section in the assignment
+% input: Data vectors D, k-NN from, k-NN to
+% output: average epsilon
+function epsilon = calculate_epsilon_plot_nn_graph(D, k_from, k_to)
+    epsilon = clusterDBSCAN.estimateEpsilon(D,k_from,k_to);
+    clusterDBSCAN.estimateEpsilon(D,k_from,k_to)
+end 
+
+% function to plot the three silhouette scores for varying Min_Pts
+% according to the results section in the assignment 
+% input: Data vectors D
+function calculate_silhouette_score(D)
+    % optimal espsilon value for min_pts derived from k-NN graph
+    Min_Pts = [3,4,5];
+    epsilons = [0.044209, 0.0549776, 0.0576649];
+    for i = 1:length(Min_Pts)
+        Ps = DBSCAN(D, epsilons(i), Min_Pts(i));
+        s = silhouette(D, Ps); 
+        disp(mean(s)); 
+    end
+end
 
 % function to perform the DBSCAN
 function Ps = DBSCAN(D, eps, Min_Pts) 
@@ -76,7 +112,7 @@ end
 % function returning the squared euclidian distance for 2 points 
 % input: 2 vectors in a 2D-plane, 1st value x, 2nd value y
 function distance = squared_euclidian_distance(point_1, point_2) 
-    distance = (point_1(1) - point_2(1)).^2 + (point_1(2) - point_2(2)).^2; 
+    distance = sqrt((point_1(1) - point_2(1)).^2 + (point_1(2) - point_2(2)).^2); 
 end 
 
 %function to plot the clusters
@@ -89,9 +125,6 @@ function plot_cluster(D, Ps, eps, Min_Pts)
     ylabel('y');
     grid
     save_plot(fig, figure_name);
-    
-    
-
 end 
 
 % function to save the plot
