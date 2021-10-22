@@ -2,21 +2,18 @@
 D = readmatrix('data_clustering.csv');
 
 
-%calculate_epsilon_plot_nn_graph(D, 4, 6)
-%experimental_results_plot(D)
-%calculate_silhouette_score(D)
+epsilon = calculate_epsilon_plot_nn_graph(D, 4, 6);
+experimental_results_plot(D, epsilon)
+calculate_silhouette_score(D, epsilon)
 
 % function to plot the three different clusters for varying Min_Pts
 % according to the results section in the assignment 
 % input: Data vectors D
-function experimental_results_plot(D)
+function experimental_results_plot(D, epsilon)
     Min_Pts = [3,4,5];
-    % optimal espsilon value for min_pts derived from k-NN graph
-    epsilons = [0.044209, 0.0549776, 0.0576649];
-
     for i = 1:length(Min_Pts)
-        Ps = DBSCAN(D, epsilons(i), Min_Pts(i)); 
-        plot_cluster(D, Ps, epsilons(i), Min_Pts(i));
+        Ps = DBSCAN(D, epsilon, Min_Pts(i)); 
+        plot_cluster(D, Ps, epsilon, Min_Pts(i));
     end
 end
 
@@ -32,12 +29,10 @@ end
 % function to plot the three silhouette scores for varying Min_Pts
 % according to the results section in the assignment 
 % input: Data vectors D
-function calculate_silhouette_score(D)
-    % optimal espsilon value for min_pts derived from k-NN graph
+function calculate_silhouette_score(D, epsilon)
     Min_Pts = [3,4,5];
-    epsilons = [0.044209, 0.0549776, 0.0576649];
     for i = 1:length(Min_Pts)
-        Ps = DBSCAN(D, epsilons(i), Min_Pts(i));
+        Ps = DBSCAN(D, epsilon, Min_Pts(i));
         s = silhouette(D, Ps); 
         disp(mean(s)); 
     end
