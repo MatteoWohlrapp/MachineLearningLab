@@ -25,14 +25,10 @@ epsilon = calculate_epsilon_plot_nn_graph(points, 4, 6);
 plot_cluster(points(:,1:2),outliers,epsilon,0)
 experimental_results_plot(points, epsilon,outliers)
 
-%Silhouette has no use here, since we are simply comparing the ammount of
-%outliers.
-%calculate_silhouette_score(X, epsilon)
-
 % function to plot the three different clusters for varying Min_Pts
 % according to the results section in the assignment 
 % input: Data vectors D
-% Slight change on what we are printing, since we 6 values per point
+% Slight change on what we are printing, since we print 6 values per point
 function experimental_results_plot(D, epsilon,true_classes)
     Min_Pts = [3,4,5];
     for i = 1:length(Min_Pts)
@@ -114,7 +110,6 @@ function result = f_point(precision,recall)
 end
 
 function x = Only_outliers(Ps)
-    
     x = zeros(length(Ps),1);
 
     for i = 1:length(Ps)
@@ -133,18 +128,6 @@ function epsilon = calculate_epsilon_plot_nn_graph(D, k_from, k_to)
     epsilon = clusterDBSCAN.estimateEpsilon(D,k_from,k_to);
     clusterDBSCAN.estimateEpsilon(D,k_from,k_to)
 end 
-
-% function to plot the three silhouette scores for varying Min_Pts
-% according to the results section in the assignment 
-% input: Data vectors D
-function calculate_silhouette_score(D, epsilon)
-    Min_Pts = [3,4,5];
-    for i = 1:length(Min_Pts)
-        Ps = DBSCAN(D, epsilon, Min_Pts(i));
-        s = silhouette(D, Ps); 
-        disp(mean(s)); 
-    end
-end
 
 % function to perform the DBSCAN
 function Ps = DBSCAN(D, eps, Min_Pts) 
